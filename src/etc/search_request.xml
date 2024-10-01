@@ -8,7 +8,7 @@
 <requests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Search/etc/search_request.xsd">
     <request query="quick_search_container" index="catalogsearch_fulltext">
         <queries>
-            <query xsi:type="boolQuery" name="quick_search_container" boost="1">
+            <query xsi:type="boolQuery" name="quick_search_container">
                 <queryReference clause="must" ref="login_required_query"/>
             </query>
             <query name="login_required_query" xsi:type="filteredQuery">
@@ -21,7 +21,7 @@
     </request>
     <request query="advanced_search_container" index="catalogsearch_fulltext">
         <queries>
-            <query xsi:type="boolQuery" name="advanced_search_container" boost="1">
+            <query xsi:type="boolQuery" name="advanced_search_container">
                 <queryReference clause="must" ref="login_required_query"/>
             </query>
             <query name="login_required_query" xsi:type="filteredQuery">
@@ -34,7 +34,7 @@
     </request>
     <request query="catalog_view_container" index="catalogsearch_fulltext">
         <queries>
-            <query xsi:type="boolQuery" name="catalog_view_container" boost="1">
+            <query xsi:type="boolQuery" name="catalog_view_container">
                 <queryReference clause="must" ref="login_required_query"/>
             </query>
             <query name="login_required_query" xsi:type="filteredQuery">
