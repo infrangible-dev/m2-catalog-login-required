@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+
+<!--
+ * @author      Andreas Knollmann
+ * @copyright   2014-2024 Softwareentwicklung Andreas Knollmann
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_action_predispatch">
+        <observer name="infrangible_catalogloginrequired" instance="Infrangible\CatalogLoginRequired\Observer\ControllerActionPredispatch"/>
+    </event>
+    <event name="catalog_controller_category_init_after">
+        <observer name="infrangible_catalogloginrequired" instance="Infrangible\CatalogLoginRequired\Observer\CatalogControllerCategoryInitAfter"/>
+    </event>
+	<event name="catalog_controller_product_view">
+		<observer name="infrangible_catalogloginrequired" instance="Infrangible\CatalogLoginRequired\Observer\CatalogControllerProductView"/>
+	</event>
+</config>
