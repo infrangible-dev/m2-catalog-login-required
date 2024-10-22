@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Infrangible\CatalogLoginRequired\Plugin\Catalog\Model\ResourceModel\Product;
+namespace Infrangible\CatalogLoginRequired\Plugin\CatalogSearch\Model\ResourceModel\Fulltext;
 
 use Infrangible\CatalogLoginRequired\Helper\Data;
 
@@ -21,8 +21,17 @@ class Collection
         $this->helper = $helper;
     }
 
+    public function beforeGetFacetedData(
+        \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $subject,
+        $field
+    ): array {
+        $this->helper->addLoginRequiredToCollection($subject);
+
+        return [$field];
+    }
+
     public function beforeLoad(
-        \Magento\Catalog\Model\ResourceModel\Product\Collection $subject,
+        \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $subject,
         $printQuery = false,
         $logQuery = false
     ): array {
