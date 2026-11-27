@@ -2,10 +2,16 @@
 
 declare(strict_types=1);
 
+/**
+ * @author      Andreas Knollmann
+ * @copyright   Copyright (c) 2014-2026 Softwareentwicklung Andreas Knollmann
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
+ */
+
 namespace Infrangible\CatalogLoginRequired\Model\AdvancedSearch\Adapter\DataMapper;
 
-use FeWeDev\Base\Arrays;
 use FeWeDev\Base\Variables;
+use Infrangible\CatalogLoginRequired\Helper\Data;
 use Infrangible\Core\Helper\Attribute;
 use Infrangible\Core\Helper\Database;
 use Magento\AdvancedSearch\Model\Adapter\DataMapper\AdditionalFieldsProviderInterface;
@@ -13,48 +19,39 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
- * @author      Andreas Knollmann
- * @copyright   2014-2024 Softwareentwicklung Andreas Knollmann
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
+ * Adds the field "login_required" to the products in the search index: 1 if the product requires a login, else 0.
  */
 class LoginRequired implements AdditionalFieldsProviderInterface
 {
-    /** @var Database */
-    protected $databaseHelper;
-
-    /** @var Attribute */
-    protected $attributeHelper;
-
-    /** @var Arrays */
-    protected $arrays;
-
-    /** @var Variables */
-    protected $variables;
-
+    /**
+     * @param Variables $variables
+     * @param Attribute $attributeHelper
+     * @param Database $databaseHelper
+     */
     public function __construct(
-        Arrays $arrays,
-        Variables $variables,
-        Attribute $attributeHelper,
-        Database $databaseHelper
+        protected Variables $variables,
+        protected Attribute $attributeHelper,
+        protected Database $databaseHelper
     ) {
-        $this->arrays = $arrays;
-        $this->variables = $variables;
-        $this->attributeHelper = $attributeHelper;
-        $this->databaseHelper = $databaseHelper;
     }
 
     /**
-     * @throws LocalizedException
-     * @throws \Exception
+     * Returns the field "login_required" of the products in the store.
+     *
+     * @param array $productIds
+     * @param int|string $storeId
+     *
+     * @return array
+     * @phpstan-param array<int|string> $productIds
+     * @phpstan-return array<int|string, array{login_required: int}>
+     * @throws LocalizedException if the attribute does not exist
      */
     public function getFields(array $productIds, $storeId): array
     {
-        $dbAdapter = $this->databaseHelper->getDefaultConnection();
-
         $attributeValues = $this->attributeHelper->getAttributeValues(
-            $dbAdapter,
+            $this->databaseHelper->getDefaultConnection(),
             Product::ENTITY,
-            'login_required',
+            Data::ATTRIBUTE_CODE,
             $productIds,
             $this->variables->intValue($storeId)
         );
@@ -62,17 +59,9 @@ class LoginRequired implements AdditionalFieldsProviderInterface
         $fields = [];
 
         foreach ($productIds as $productId) {
-            $loginRequired = $this->arrays->getValue(
-                $attributeValues,
-                $this->variables->stringValue($productId),
-                0
-            );
+            $loginRequired = $attributeValues[ $productId ] ?? 0;
 
-            if ($loginRequired === null) {
-                $loginRequired = 0;
-            }
-
-            $fields[ $productId ] = ['login_required' => $loginRequired];
+            $fields[ $productId ] = [Data::ATTRIBUTE_CODE => is_numeric($loginRequired) ? (int)$loginRequired : 0];
         }
 
         return $fields;
